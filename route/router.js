@@ -10,6 +10,9 @@ router.get('/login',con.get.login);  //로그인창
 router.get('/fail',con.get.fail);    //실패창
 router.get('/mypage',log.checkLogin,con.get.mypage);   //마이페이지창
 router.get('/logout',log.checkLogin,con.get.logout);   //로그아웃하기
+router.get('/write',log.checkLogin,con.get.write);
+router.get('/write/list',log.checkLogin,con.get.writelist);
+router.get('/writemain/:num',log.checkLogin,con.get.writemain);
 //////////////////// log.checkLogin은 req.user가 있는지 확인한다.(로그인했는지 안했는지)
 
 
@@ -21,5 +24,6 @@ router.post('/login',log.passport.authenticate('local',{//->로그인 인증을 
 }),con.post.login);  
 router.post('/checkid',con.post.checkid);  //가입시중복아이디 체크
 router.post('/pwchange',con.post.pwchange); //비밀번호 변경
+router.post('/write',con.post.write);
 ///////////////////
 module.exports = router;

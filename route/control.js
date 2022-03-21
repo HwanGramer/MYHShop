@@ -30,6 +30,23 @@ const get = {
     logout : function(req , res){
         req.logout();
         res.redirect('/');
+    },
+    write : function(req,res){
+        res.render('write.ejs',{data : req.user});
+    },
+    writelist : function(req,res){
+        db.collection('write').find().toArray(function(err,result){
+            res.render('writelist.ejs',{data : result});
+        })
+    },
+    ///////////////중요 url에 인자를 담아서 데이터를 보내서 처리함 굉장히 좋은 전략
+    writemain : function(req,res){
+        //ajax는 render요청이 안되서 url안에 파라미터를 담아서 요청처리함     
+        var num =parseInt(req.params.num);
+        db.collection('write').findOne({number : num},function(err,result){
+            if(err) return console.log(err);
+            res.render('writemain.ejs',{data : result});
+        });
     }
 }
 
@@ -84,9 +101,20 @@ const post ={
                 res.send({msg : '기존비밀번호 틀림'});
             }
         })
-    }
+    },
+    write : function(req,res){
+        db.collection('noticeNumber').findOne({name : 'notice'},function(err, result){
+            if(err) return console.log(err);
 
-    
+            db.collection('write').insertOne({id : req.user.id , title : req.body.writetitle , text : req.body.writetext,number : result.num+1 },function(err,result){
+                if(err) return console.log('database err');
+                res.redirect('/');
+            })
+            db.collection('noticeNumber').updateOne({name : 'notice'},{$inc : {num : 1}},function(err, result){
+                if(err) return console.log(err)
+            })
+        })
+    }, 
 }
 
 module.exports = {get,post};
