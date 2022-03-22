@@ -13,6 +13,7 @@ router.get('/logout',log.checkLogin,con.get.logout);   //로그아웃하기
 router.get('/write',log.checkLogin,con.get.write);
 router.get('/write/list',log.checkLogin,con.get.writelist);
 router.get('/writemain/:num',log.checkLogin,con.get.writemain);
+router.get('/write/list/mylist/:id',log.checkLogin,con.get.mylist);
 //////////////////// log.checkLogin은 req.user가 있는지 확인한다.(로그인했는지 안했는지)
 
 

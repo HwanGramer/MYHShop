@@ -22,7 +22,7 @@ const get = {
         res.render('login.ejs');
     },
     fail : function(req,res){
-        res.send(JSON.stringify(req.user));
+        res.render('fail.ejs');
     },
     mypage : function(req, res){
         res.render('mypage.ejs',{data : req.user});
@@ -45,8 +45,21 @@ const get = {
         var num =parseInt(req.params.num);
         db.collection('write').findOne({number : num},function(err,result){
             if(err) return console.log(err);
+            if(!result){
+                res.redirect('/fail');
+            }
             res.render('writemain.ejs',{data : result});
         });
+    },
+    mylist : function(req,res){
+        var name = req.params.id;
+        db.collection('write').find({id : name}).toArray(function(err,result){
+            if(result.length === 0){ //DB에 아무런 값이 없다면은 -> 발행한 게시물이 없기때문에 /fail로간다.
+                res.redirect('/fail');
+            }else{ // 하나라도 쓰면 result.length인 배열이 하나라도 나오기때문에 render해준다.
+                res.render('writemylist.ejs',{data : result});
+            }
+        })
     }
 }
 
@@ -72,6 +85,7 @@ const post ={
                 if(err) return console.log('dbupdateerr'+err);
             })
         })
+        req.logout();
     },
 
     login : function(req,res){
