@@ -11,13 +11,31 @@
 </head>
 <body>
     <% for(i=0; i < data.length ; i++) { %>
-        <div data-num="<%= data[i].number %>" class="container" style="background-color: peachpuff;">
-            <h3><%= data[i].title %></h3>
-            <p><%= data[i].text %></p>
+        <div style="background-color: peachpuff; border : 1px solid black">
+            <div data-num="<%= data[i].number %>" class="container">
+                <h3><%= data[i].title %></h3>
+                <p><%= data[i].text %></p>
+                <a href="/writemain/writechange/<%= data[i].number %>"><button>수정</button></a>
+            </div>
+            <button class="bon" data-num="<%= data[i].number %>" style="margin-left: 10%; margin-bottom:12px;">삭제</button>
         </div>
     <%}%>
 
     <script>
+        $('.bon').click(function(e){
+            var num = e.target.dataset.num;
+            //삭제버튼
+            $.ajax({
+                method : 'post',
+                url : '/write/delete',
+                data : {number : num}
+            }).done(function(result){
+                alert(result.msg);
+                window.location.href = `/`;
+            })
+
+        })
+
         $('.container').click(function(e){
             // e.target.dataset.num -->이걸로주다가 다른게눌러지면 바로에러가나오기때문에
             // div박스안에 데이터를 직접 지정해서 넣어주자! 깨달았다

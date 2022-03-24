@@ -52,12 +52,28 @@ const get = {
         });
     },
     mylist : function(req,res){
-        var name = req.params.id;
+        var name = req.user.id;  // 굳이 url의 파라미터로 받지않아도 user가 있잖아!!
         db.collection('write').find({id : name}).toArray(function(err,result){
             if(result.length === 0){ //DB에 아무런 값이 없다면은 -> 발행한 게시물이 없기때문에 /fail로간다.
                 res.redirect('/fail');
             }else{ // 하나라도 쓰면 result.length인 배열이 하나라도 나오기때문에 render해준다.
                 res.render('writemylist.ejs',{data : result});
+            }
+        })
+    },
+    writechange : function(req,res){
+        var num = parseInt(req.params.num);  //--> url에서 넘어온 파라미터 숫자로변경
+        db.collection('write').findOne({number : num},function(err , result){
+            //-> url을 이용해서 다른계정의 글수정을 들어갈려고하는 것을 막음 (보안)
+            //보안보안보안보안보안보안보안보안보안보안보안보안보안보안보안보안보안보안
+            if(!result){
+                return res.redirect('/fail'); //다른계정글 수정 페이지를 url에 넣어서 침투할려했을때
+            }
+            if(result.id == req.user.id){   //자기글수정이 자기계정 글수정이 맞는지
+                if(err) return res.redirect('/fail');
+                res.render('writechange.ejs',{data : result});
+            }else{
+                res.redirect('/fail');
             }
         })
     }
@@ -129,6 +145,28 @@ const post ={
             })
         })
     }, 
+    writechange : function(req,res){
+        if(req.body.id == req.user.id){
+            var title_ = req.body.writetitle_;
+            var text_ = req.body.writetext_;
+            var num_ = req.body.writenum_;
+            num_ = parseInt(num_);
+            db.collection('write').updateOne({number : num_},{$set : {title : title_ , text : text_} },function(err,result){
+                if(err) return res.redirect('/fail');
+                res.send({msg : "게시물 수정완료"})
+            })
+        }else{
+            res.redirect('/fail');
+        }
+    },
+    //삭제 함
+    writedelete : function(req,res){
+        var num = parseInt(req.body.number);
+        db.collection('write').deleteOne({number : num},function(err,result){
+            if(err) return console.log(err+'errrrrrrr');
+            res.send({msg : 'delete'});
+        })
+    }
 }
 
 module.exports = {get,post};

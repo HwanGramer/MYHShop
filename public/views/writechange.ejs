@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물수정</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+</head>
+<body>
+        <div class="mb-3">
+            <input type="text" style="display: none;" value="<%= data.number %>" class="num">
+            <input type="text" style="display: none;" value="<%= data.id %>" class="id">
+            <input class="writetitle" value="<%= data.title %>" type="text" id="exampleFormControlInput1" placeholder="title">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+            <textarea class="writetext" id="exampleFormControlTextarea1" rows="3"><%= data.text %></textarea>
+        </div>
+        <input type="button" class="bon">
+        
+
+        <script>
+
+            //게시물 수정 구현
+            $('.bon').click(function(e){
+                var title = $('.writetitle').val();
+                var text = $('.writetext').val();
+                var num = $('.num').val();
+                var id = $('.id').val();
+                aj(title,text,num,id);
+            })
+            //////// err 해결
+            //시발 에러 2시간동안 찾았지만 router에서 시발 post요청컨트롤로 
+            //해야되는데 con.get.writechange->이렇게 되있더라아오시발
+            //////
+            function aj(title,text,num,_id){
+                $.ajax({
+                    method : 'post',
+                    url : '/writemain/writechange',
+                    data : {
+                        writetitle_ : title,
+                        writetext_ : text,
+                        writenum_ : num,
+                        id : _id,
+                    }
+                }).done(function(result){
+                    alert(result.msg);
+                    window.location.href = `/write/list/mylist/:${_id}`
+                })
+                console.log(title,text,num)
+            }
+        </script>
+</body>
+</html>
