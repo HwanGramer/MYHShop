@@ -76,6 +76,11 @@ const get = {
                 res.redirect('/fail');
             }
         })
+    },
+    search : function(req,res){
+        db.collection('write').find({$text : {$search : req.query.value}}).toArray(function(err,result){
+            res.render('writelist.ejs',{data : result});
+        })
     }
 }
 

@@ -15,6 +15,7 @@ router.get('/write/list',log.checkLogin,con.get.writelist);
 router.get('/writemain/:num',log.checkLogin,con.get.writemain);
 router.get('/writemain/writechange/:num',log.checkLogin,con.get.writechange);
 router.get('/write/list/mylist/:id',log.checkLogin,con.get.mylist);
+router.get('/writesearch',log.checkLogin,con.get.search);
 //////////////////// log.checkLogin은 req.user가 있는지 확인한다.(로그인했는지 안했는지)
 
 
