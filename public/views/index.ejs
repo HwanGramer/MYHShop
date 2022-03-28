@@ -11,13 +11,15 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <p><b><%= data %></b>님 반갑습니다</p>
+    <p><b><%= data.id %></b>님 반갑습니다</p>
+    <img src="<%= data.imgname %>" alt="프로필 이미지" style="width: 100px; height: 100px; border-radius: 50%;">
     <a href="/join"><button>회원가입완벽하게 만들기</button></a>
     <a href="/login"><button>로그인</button></a>
     <a href="/mypage"><button>마이페이지</button></a>
     <a href="/logout"><button>로그아웃</button></a>
     <a href="/write"> <button>글쓰기</button></a>
     <a href="/write/list"> <button>글목록</button></a>
+    <a href="/upload"> <button>이미지업로드</button></a>
     <a href="/write/list/mylist/<%= data %>"> <button>내가쓴목록보기</button></a>
     
     <div class="login-box">
@@ -32,7 +34,8 @@
     <script>
         $('#search').click(function(e){
             var search = $('#exampleInputEmail1').val();
-            window.location.replace(`/writesearch?value=${search}`);
+            // window.location.replace(`/writesearch?value=${search}`);  //->이걸 썻더니 뒤로가기를 하면 다시돌아오질않은
+            window.location.href = `/writesearch?value=${search}`;       //-> 하지만 window.location.href쓰면 뒤로가기가 잘됨
         })
         
     </script>

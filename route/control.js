@@ -10,9 +10,13 @@ MongoClient.connect(process.env.DB_URL,function(err,client){
 const get = {
     home : function(req,res){
         if(req.user){
-            res.render('index.ejs',{data : req.user.id});   // 로그인한 회원이라면 id값을 보낸다.
-        }else{
-            res.render('index.ejs',{data : '비회원'})    // 회원이아니라면 '비회원을 보내고'
+            db.collection('user').findOne({id : req.user.id} ,function(err , result){
+                if(err) return console.log(err);
+                res.render('index.ejs',{data : result});   // 로그인한 회원이라면 id값을 보낸다.
+            })
+        }else{                          //req.user가 없다면 아무런정보가 없기때문에 data.id , data.imaname 똑같이 보내야 회원이든 비회원이든  
+                                        // ejs 에서 읽을 수 있다.  // 회원이아니라면 '비회원을 보내고'
+            res.render('index.ejs',{data : {id : '비회원' , imgname : 'defultimg.png'}})    
         }
     },
     join : function(req,res){
@@ -78,9 +82,25 @@ const get = {
         })
     },
     search : function(req,res){
-        db.collection('write').find({$text : {$search : req.query.value}}).toArray(function(err,result){
+        var searchtitle = [
+            {
+                $search : {
+                    index : 'searchTitle',
+                    text : {
+                        query : req.query.value,
+                        path : ['title','text']  //db에 저장된 이름 , 내용도 검색
+                    }
+                }
+            }
+        ]
+
+        db.collection('write').aggregate(searchtitle).toArray(function(err,result){
+            if(err ) console.log(err);
             res.render('writelist.ejs',{data : result});
         })
+    },
+    upload : function(req,res){
+        res.render('upload.ejs');
     }
 }
 
@@ -170,6 +190,14 @@ const post ={
         db.collection('write').deleteOne({number : num},function(err,result){
             if(err) return console.log(err+'errrrrrrr');
             res.send({msg : 'delete'});
+        })
+    },
+    upload : function(req,res){
+         //image폴더 경로찾아보기 dirname의 상위폴더 코드 찾기
+        //그리고 이미지 중복저장이안되서 다시한번 찾아봐야됨
+        db.collection('user').updateOne({id : req.user.id},{$set : {profile : req.file.path , imgname : req.file.originalname }},function(err,result){
+            if(err) return console.log(err)
+            res.redirect('/');
         })
     }
 }
