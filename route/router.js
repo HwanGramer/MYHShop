@@ -18,6 +18,8 @@ router.get('/writemain/writechange/:num',log.checkLogin,con.get.writechange);
 router.get('/write/list/mylist/:id',log.checkLogin,con.get.mylist);
 router.get('/writesearch',log.checkLogin,con.get.search);
 router.get('/upload',log.checkLogin,con.get.upload);
+router.get('/chat',log.checkLogin,con.get.chat);
+router.get('/chatroom/:id',log.checkLogin,con.get.chatroom);
 //////////////////// log.checkLogin은 req.user가 있는지 확인한다.(로그인했는지 안했는지)
 
 

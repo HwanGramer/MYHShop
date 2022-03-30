@@ -102,7 +102,19 @@ const get = {
     },
     upload : function(req,res){
         res.render('upload.ejs');
-    }
+    },
+    chat : function(req,res){
+        db.collection('user').find().toArray(function(err,result){
+            res.render('chat.ejs',{data : result});
+        })
+    },
+    chatroom : function(req,res){
+        db.collection('chatroom').insertOne({receiveid : req.params.id , sendid : req.user.id },function(err,result){
+            if(err) return console.log(err);
+            ///채팅방 이름이나 뭐 해서 채팅방 구현해야돰
+            res.render('mychatlist.ejs');
+        })
+    },
 }
 
 const post ={
@@ -209,7 +221,7 @@ const post ={
     upload : function(req,res){
          //image폴더 경로찾아보기 dirname의 상위폴더 코드 찾기
         //그리고 이미지 중복저장이안되서 다시한번 찾아봐야됨
-        db.collection('user').updateOne({id : req.user.id},{$set : {profile : req.file.path , imgname : req.file.originalname }},function(err,result){
+        db.collection('user').updateOne({id : req.user.id},{$set : {profile : req.file.path , imgname : req.file.filename }},function(err,result){
             if(err) return console.log(err)
             res.redirect('/');
         })

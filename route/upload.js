@@ -6,7 +6,7 @@ const profilestorage = multer.diskStorage({
         cb(null,'./public/views/image');
     },
     filename : function(req,file,cb){
-        cb(null , file.originalname);
+        cb(null , req.user.id + file.originalname);
     }
 })
 
