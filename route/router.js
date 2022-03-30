@@ -29,7 +29,7 @@ router.post('/login',log.passport.authenticate('local',{//->로그인 인증을 
 }),con.post.login);  
 router.post('/checkid',con.post.checkid);  //가입시중복아이디 체크
 router.post('/pwchange',con.post.pwchange); //비밀번호 변경
-router.post('/write',con.post.write);
+router.post('/write',uploadmoudle.writeimg.single('imgfile'),con.post.write);  //single('imgfile') -> input창에 있는 name='imgfile'
 router.post('/writemain/writechange',log.checkLogin,con.post.writechange);
 router.post('/write/delete',log.checkLogin,con.post.writedelete);
 router.post('/upload',log.checkLogin,uploadmoudle.profileupload.single('img'),con.post.upload);

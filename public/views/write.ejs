@@ -10,7 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <form action="/write" method="post">
+    <form action="/write" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label"><%= data.id %>님의 글</label>
             <input name="writetitle" type="text" class="form-control" id="exampleFormControlInput1" placeholder="title">
@@ -19,6 +19,7 @@
             <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
             <textarea name="writetext" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
         </div>
+        <input type="file" name='imgfile'>
         <button type="submit" class="btn btn-dark">발행</button>
     </form>
 </body>

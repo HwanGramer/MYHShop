@@ -46,12 +46,13 @@ const get = {
     ///////////////중요 url에 인자를 담아서 데이터를 보내서 처리함 굉장히 좋은 전략
     writemain : function(req,res){
         //ajax는 render요청이 안되서 url안에 파라미터를 담아서 요청처리함     
-        var num =parseInt(req.params.num);
+        var num = parseInt(req.params.num);
         db.collection('write').findOne({number : num},function(err,result){
             if(err) return console.log(err);
             if(!result){
                 res.redirect('/fail');
             }
+            // console.log(result.img); //-> 밑에 res.render지우니깐 됨 뭔가 순서문제인듯
             res.render('writemain.ejs',{data : result});
         });
     },
@@ -160,11 +161,24 @@ const post ={
     write : function(req,res){
         db.collection('noticeNumber').findOne({name : 'notice'},function(err, result){
             if(err) return console.log(err);
+            
 
-            db.collection('write').insertOne({id : req.user.id , title : req.body.writetitle , text : req.body.writetext,number : result.num+1 },function(err,result){
-                if(err) return console.log('database err');
-                res.redirect('/');
-            })
+            //에러 시발 고쳐야됨 갑자기왜이러냐
+            if(!req.file){
+                db.collection('write').insertOne({id : req.user.id , title : req.body.writetitle , 
+                    text : req.body.writetext,number : result.num+1 },function(err,result){
+                    if(err) return console.log('database err');
+                    res.redirect('/');
+                })
+            }else{
+                db.collection('write').insertOne({id : req.user.id , title : req.body.writetitle , 
+                    text : req.body.writetext,number : result.num+1,img : req.file.filename },function(err,result){
+                    if(err) return console.log('database err');
+                    res.redirect('/');
+                })
+            }
+
+
             db.collection('noticeNumber').updateOne({name : 'notice'},{$inc : {num : 1}},function(err, result){
                 if(err) return console.log(err)
             })
