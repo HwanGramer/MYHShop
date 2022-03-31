@@ -14,7 +14,7 @@
     <hr>
     <h3>제목 : <%= data.data1.title %></h3>
     <!-- 만약 이미지가 없는 게시물이면 뜨지않음 -->
-    <img src="/views/writeimg/<%= data.data1.img %>" alt="<%= data.data1.img %>" > 
+    <img style="width: 40%;" src="/views/writeimg/<%= data.data1.img %>" alt="<%= data.data1.img %>" > 
     <!-- 게시판이미지는 따로 writeimg 폴더에 저장 -->
     <!-- 여기 이미지 태그 src앞에 '/' -> 이거 안붙히면 에러남 도대채 왜? 메인페이지 프로필사진은 없어도 안나던데 뭐지쉬발 -->
     <p>내용 : <%= data.data1.text %></p>
@@ -22,8 +22,12 @@
     
     <% for( i= 0 ; i < data.data2.length; i++ ) {%>
         <div class="card">
-            <div class="card-body">
-                <p style="color: royalblue;"><%= data.data2[i].id %></p><%= data.data2[i].comment %>
+            <div class="card-body" style="display: flex;">
+                <span style="margin-right: 10%; color: skyblue;" ><%= data.data2[i].id %> :</span><%= data.data2[i].comment %>
+                <!-- 지금 접속한 유저와 댓글을쓴 사람의 id와같은지 보고 같다면 '댓글삭제라는 버튼이 나옴' -->
+                <% if( data.data3 == data.data2[i].id) { %>
+                    <button class="comdel" data-id="<%= data.data2[i]._id %>">댓글삭제</button> 
+                <% } %>
             </div>
         </div>
     <% } %>
@@ -32,6 +36,23 @@
     <button class="btn" data-title="<%= data.data1._id %>" >댓글달기</button>
         
     <script>
+        //댓글삭제
+        $('.comdel').click(function(e){
+            var comid = e.target.dataset.id
+            $.ajax({
+                method : 'DELETE',
+                url : '/comment',
+                data : { id : comid }
+            }).done(function(result){
+                if(result.msg == "succecs"){
+                    window.location.reload();
+                }else{
+                    window.location.href = '/fail';
+                }
+            })
+        })
+
+        //댓글달기
         $('.btn').click(function(e){
             var ti = $('.btn').data('title');
             var coment = $('.com').val();

@@ -38,4 +38,7 @@ router.post('/write/delete',log.checkLogin,con.post.writedelete);
 router.post('/upload',log.checkLogin,uploadmoudle.profileupload.single('img'),con.post.upload);
 router.post('/comment',log.checkLogin,con.post.comment);
 ///////////////////
+
+
+router.delete('/comment',log.checkLogin,con.del.comdel);
 module.exports = router;

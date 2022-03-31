@@ -56,8 +56,8 @@ const get = {
             // console.log(result.img); //-> 밑에 res.render지우니깐 됨 뭔가 순서문제인듯
             db.collection('comments').find({ title : String(result._id) }).toArray(function(err,result1){
                 // res.status(200).send(result);
-                //-> render줄때 이런식으로 주자 데이터는 무조건 하나로!
-                res.render('writemain.ejs',{data : {data1 : result , data2 : result1}});
+                //-> render줄때 이런식으로 주자 데이터는 무조건 하나로!                                 //댓글삭제를 위해 유저의 아이디로 보냄
+                res.render('writemain.ejs',{data : {data1 : result , data2 : result1 , data3 : req.user.id}});
             })
         });
     },
@@ -244,7 +244,7 @@ const post ={
         var id = req.body._id;
         db.collection('write').deleteOne({number : num},function(err,result){
             if(err) return console.log(err+'errrrrrrr');
-
+            //개시물 _id와 댓글의 부모요소인 title에 게시물 아이디가 같다면 통째로 삭제
             db.collection('comments').deleteMany({ title : id },function(err,result){
                 //게시물안에있는 댓글들도 모조리 삭제 게시물의 object아이디와 댓글부모의 게시물object가 맞으면 댓글 다삭제
                 if(err) return console.log(err)
@@ -268,4 +268,15 @@ const post ={
     }
 }
 
-module.exports = {get,post};
+
+
+const del ={
+    comdel : function(req,res){
+                                            //여기서 _id는 sting이 아닌 objectID로 되있기때문에 req.body.id도 ojectID로 바꿔주면 성공
+        db.collection('comments').deleteOne({_id : ObjectID(req.body.id)},function(err,result){
+            if(err) return console.log(err);
+            res.send({msg : 'succecs'})
+        })
+    }
+}
+module.exports = {get,post,del};
