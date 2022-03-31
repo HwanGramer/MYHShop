@@ -20,6 +20,7 @@ router.get('/writesearch',log.checkLogin,con.get.search);
 router.get('/upload',log.checkLogin,con.get.upload);
 router.get('/chat',log.checkLogin,con.get.chat);
 router.get('/chatroom/:id',log.checkLogin,con.get.chatroom);
+router.get('/chat/mychatlist',log.checkLogin,con.get.mychatlist);
 //////////////////// log.checkLogin은 req.user가 있는지 확인한다.(로그인했는지 안했는지)
 
 
@@ -35,5 +36,6 @@ router.post('/write',uploadmoudle.writeimg.single('imgfile'),con.post.write);  /
 router.post('/writemain/writechange',log.checkLogin,con.post.writechange);
 router.post('/write/delete',log.checkLogin,con.post.writedelete);
 router.post('/upload',log.checkLogin,uploadmoudle.profileupload.single('img'),con.post.upload);
+router.post('/comment',log.checkLogin,con.post.comment);
 ///////////////////
 module.exports = router;

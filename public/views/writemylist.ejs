@@ -17,21 +17,23 @@
                 <p><%= data[i].text %></p>
                 <a href="/writemain/writechange/<%= data[i].number %>"><button>수정</button></a>
             </div>
-            <button class="bon" data-num="<%= data[i].number %>" style="margin-left: 10%; margin-bottom:12px;">삭제</button>
+            <button class="bon" data-num="<%= data[i].number %>" data-id="<%= data[i]._id %>" style="margin-left: 10%; margin-bottom:12px;">삭제</button>
         </div>
     <%}%>
 
     <script>
         $('.bon').click(function(e){
             var num = e.target.dataset.num;
+            var id = e.target.dataset.id;
             //삭제버튼
             $.ajax({
                 method : 'post',
                 url : '/write/delete',
-                data : {number : num}
+                //삭제버튼 눌렀을때 object아이디도 같이보내서 게시물안에있는 댓글까지 모조리 삭제하게만듬
+                data : {number : num , _id : id}
             }).done(function(result){
+                window.location.reload();
                 alert(result.msg);
-                window.location.href = `/`;
             })
 
         })

@@ -10,16 +10,44 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1><%= data.id %>님의 글입니다 </h1>
+    <h1><%= data.data1.id %>님의 글입니다 </h1>
     <hr>
-    <h3>제목 : <%= data.title %></h3>
+    <h3>제목 : <%= data.data1.title %></h3>
     <!-- 만약 이미지가 없는 게시물이면 뜨지않음 -->
-    <img src="/views/writeimg/<%= data.img %>" alt="<%= data.img %>" > 
+    <img src="/views/writeimg/<%= data.data1.img %>" alt="<%= data.data1.img %>" > 
     <!-- 게시판이미지는 따로 writeimg 폴더에 저장 -->
     <!-- 여기 이미지 태그 src앞에 '/' -> 이거 안붙히면 에러남 도대채 왜? 메인페이지 프로필사진은 없어도 안나던데 뭐지쉬발 -->
-    <p>내용 : <%= data.text %></p>
+    <p>내용 : <%= data.data1.text %></p>
     
-    <input type="text" name="comment">
-    <button>댓글달기</button>
+    
+    <% for( i= 0 ; i < data.data2.length; i++ ) {%>
+        <div class="card">
+            <div class="card-body">
+                <p style="color: royalblue;"><%= data.data2[i].id %></p><%= data.data2[i].comment %>
+            </div>
+        </div>
+    <% } %>
+
+    <input type="text" name="com" class="com" >
+    <button class="btn" data-title="<%= data.data1._id %>" >댓글달기</button>
+        
+    <script>
+        $('.btn').click(function(e){
+            var ti = $('.btn').data('title');
+            var coment = $('.com').val();
+            $.ajax({
+                method : 'POST',
+                url : '/comment',
+                data : { title : ti , com : coment }
+            }).done(function(result){
+                //댓글저장에 성공하면 새로고침
+                if(result.msg == "succecs"){
+                    window.location.reload();
+                }else{
+                    window.location.href = '/fail';
+                }
+            })
+        })
+    </script>
 </body>
 </html>

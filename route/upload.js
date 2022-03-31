@@ -1,5 +1,14 @@
 
 const multer = require('multer');
+require('dotenv').config();
+const MongoClient = require('mongodb').MongoClient;
+
+var db;
+var imgnum;
+MongoClient.connect(process.env.DB_URL,function(err,client){
+    if(err) return console.log(err+'database error');
+    db = client.db('web');
+})
 
 const profilestorage = multer.diskStorage({
     destination : function(req,file,cb){
@@ -15,7 +24,11 @@ const writeimgst = multer.diskStorage({
         cb(null , './public/views/writeimg'); // 저장할 폴더 이름
     },
     filename : function(req , file , cb){
-        cb(null , new Date() + file.originalname );   //-> 저장될 파일이름
+        db.collection('imgnumber').findOne({name : 'imgnumber'},function(err,result){
+            if(err) return console.log(err);
+            imgnum = result.number;
+            cb(null , String(imgnum) + file.originalname );   //-> 저장될 파일이름  img는 앞에 번호를 붙혀서 저장한다
+        })
     }
 })
 

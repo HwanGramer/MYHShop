@@ -1,5 +1,6 @@
 require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectId;
 
 var db;
 MongoClient.connect(process.env.DB_URL,function(err,client){
@@ -44,7 +45,7 @@ const get = {
         })
     },
     ///////////////중요 url에 인자를 담아서 데이터를 보내서 처리함 굉장히 좋은 전략
-    writemain : function(req,res){
+    writemain : function(req,res){   //-->> ************댓글까지 찾아서 모두 data에 담아서writemain.ejs로 보낸다**************
         //ajax는 render요청이 안되서 url안에 파라미터를 담아서 요청처리함     
         var num = parseInt(req.params.num);
         db.collection('write').findOne({number : num},function(err,result){
@@ -53,7 +54,11 @@ const get = {
                 res.redirect('/fail');
             }
             // console.log(result.img); //-> 밑에 res.render지우니깐 됨 뭔가 순서문제인듯
-            res.render('writemain.ejs',{data : result});
+            db.collection('comments').find({ title : String(result._id) }).toArray(function(err,result1){
+                // res.status(200).send(result);
+                //-> render줄때 이런식으로 주자 데이터는 무조건 하나로!
+                res.render('writemain.ejs',{data : {data1 : result , data2 : result1}});
+            })
         });
     },
     mylist : function(req,res){
@@ -109,12 +114,31 @@ const get = {
         })
     },
     chatroom : function(req,res){
-        db.collection('chatroom').insertOne({receiveid : req.params.id , sendid : req.user.id },function(err,result){
+        db.collection('chatroom').insertOne({receiveid : req.params.id , sendid : req.user.id , chatname : req.params.id + req.user.id},function(err,result){
             if(err) return console.log(err);
             ///채팅방 이름이나 뭐 해서 채팅방 구현해야돰
-            res.render('mychatlist.ejs');
+            
+            db.collection('user').updateOne({ id : req.params.id},{$push : {chatlist : req.user.id}},function(err,result){
+                if(err) return console.log(err)
+            })
+            db.collection('user').updateOne({ id : req.user.id},{$push : {chatlist : req.params.id }},function(err,result){
+                if(err) return console.log(err)
+            })
+            //챗팅 하기 구현
+            //서로 1대1 채팅의 서로의 아이디를 저장
+            // A - B 가 채팅을한다하면 A의 chatlist에 B아이디를 저장 B의 chatlist에 A를 저장
+            res.redirect('/chat/mychatlist');
         })
     },
+    mychatlist : function(req,res){
+        db.collection('user').findOne({id : req.user.id},function(err,result){
+            if(!result.chatlist){
+                res.redirect('/fail');
+            }else{
+                res.render('mychatlist.ejs',{data : result.chatlist});
+            }
+        })
+    }
 }
 
 const post ={
@@ -187,6 +211,10 @@ const post ={
                     text : req.body.writetext,number : result.num+1,img : req.file.filename },function(err,result){
                     if(err) return console.log('database err');
                     res.redirect('/');
+
+                    db.collection('imgnumber').updateOne({name : 'imgnumber'},{$inc : {number : 1}},function(err , result){
+                        if(err) return console.log(err);
+                    })
                 })
             }
 
@@ -213,9 +241,15 @@ const post ={
     //삭제 함
     writedelete : function(req,res){
         var num = parseInt(req.body.number);
+        var id = req.body._id;
         db.collection('write').deleteOne({number : num},function(err,result){
             if(err) return console.log(err+'errrrrrrr');
-            res.send({msg : 'delete'});
+
+            db.collection('comments').deleteMany({ title : id },function(err,result){
+                //게시물안에있는 댓글들도 모조리 삭제 게시물의 object아이디와 댓글부모의 게시물object가 맞으면 댓글 다삭제
+                if(err) return console.log(err)
+                res.send({msg : 'delete'});
+            })
         })
     },
     upload : function(req,res){
@@ -224,6 +258,12 @@ const post ={
         db.collection('user').updateOne({id : req.user.id},{$set : {profile : req.file.path , imgname : req.file.filename }},function(err,result){
             if(err) return console.log(err)
             res.redirect('/');
+        })
+    },
+    comment : function(req,res){                                    //object id 저장
+        db.collection('comments').insertOne({id : req.user.id ,title : req.body.title , comment : req.body.com , time : new Date() },function(err,result){
+            if(err) return console.log(err);
+            res.send({msg : 'succecs'});
         })
     }
 }
